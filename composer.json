@@ -1,0 +1,19 @@
+{
+    "name": "yeganehha/digikala-seller-webhook",
+    "description": "With the help of this package, you can be informed about the registration of a new order in Digikala through social networks (like Telegram, Discord, SMS, etc.) and automatically update the stock of other similar products.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Yeganehha\\DigikalaSellerWebhook\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Erfan Ebrahimi",
+            "email": "me@erfanebrahimi.ir"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
