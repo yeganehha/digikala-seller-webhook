@@ -36,7 +36,13 @@ class DigikalaService
     private $send_notification = true;
 
 
-    private $Orders = [];
+    /**
+     * list of all orders per each webhook call
+     * @var array
+     */
+    public $orders = [];
+
+
     /**
      * Provide Digikala webhook token for authorization. You can find the token
      * in your panel at https://seller.digikala.com/api/webhook/
