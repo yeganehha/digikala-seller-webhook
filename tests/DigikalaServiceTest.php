@@ -101,9 +101,20 @@ class DigikalaServiceTest extends TestCase
     public function testCustomizeOrderAfterGetOrders(){
         $digikala = new DigikalaService();
         $previousOrders = $digikala->orders()->getOrders();
+        $referenceOrders = $digikala->getOrders(true);
         $digikala->onGetOrder(function ($ordersItems){
             $ordersItems[0]->order_id = 1234;
         });
-        $this->assertEquals([171942704 , 1234], [$previousOrders[0]->order_id,$digikala->getOrders()[0]->order_id]);
+        $this->assertEquals(
+            [
+                171942704 ,
+                1234 ,
+                1234
+            ], [
+                $previousOrders[0]->order_id,
+                $referenceOrders[0]->order_id,
+                $digikala->getOrders()[0]->order_id
+            ]
+        );
     }
 }
