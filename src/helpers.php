@@ -1,6 +1,7 @@
 <?php
 
 use Yeganehha\DigikalaSellerWebhook\DigikalaService;
+use Yeganehha\DigikalaSellerWebhook\Exceptions\OrdersNotArrayException;
 use Yeganehha\DigikalaSellerWebhook\Exceptions\UnauthorizedException;
 
 if ( ! function_exists('digikala') ){
@@ -37,9 +38,10 @@ if ( ! function_exists('digikala_order') ){
      * @param bool $update_quantity
      * @return array
      * @throws UnauthorizedException
+     * @throws OrdersNotArrayException
      */
     function digikala_order($webhook_token = null, $api_token = null , bool $update_quantity = true):array
     {
-        return digikala($webhook_token, $api_token ,  $update_quantity)->orders();
+        return digikala($webhook_token, $api_token ,  $update_quantity)->orders()->getOrders();
     }
 }

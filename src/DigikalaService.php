@@ -4,7 +4,9 @@
 namespace Yeganehha\DigikalaSellerWebhook;
 
 
+use Yeganehha\DigikalaSellerWebhook\Exceptions\ListOrdersShouldBeOrderNModelException;
 use Yeganehha\DigikalaSellerWebhook\Exceptions\OrdersNotArrayException;
+use Yeganehha\DigikalaSellerWebhook\Model\Order;
 
 class DigikalaService
 {
@@ -40,7 +42,7 @@ class DigikalaService
      * list of all orders per each webhook call
      * @var array
      */
-    public $orders = [];
+    private $orders = [];
 
 
     /**
@@ -145,11 +147,11 @@ class DigikalaService
 
     /**
      * Get List of all order when new webhook received.
-     * @return array
+     * @return DigikalaService
      * @throws Exceptions\UnauthorizedException
-     * @throws OrdersNotArrayException
+     * @throws OrdersNotArrayException|ListOrdersShouldBeOrderNModelException
      */
-    public function getListOrdersFromWebhook(): array
+    public function getListOrdersFromWebhook(): DigikalaService
     {
         $WebhookHandler = new WebhookHandler($this->webhook_token);
         $this->orders = $WebhookHandler->getOrders();
@@ -160,6 +162,9 @@ class DigikalaService
 
         if ( ! is_array($this->orders) )
             throw new OrdersNotArrayException();
+        foreach ( $this->orders as $order)
+            if( ! $order instanceof  Order )
+                throw new ListOrdersShouldBeOrderNModelException();
 
         if ( $this->update_quantity )
         {
@@ -169,16 +174,17 @@ class DigikalaService
         {
             //Todo : add send order notification
         }
-        return $this->orders;
+        return $this;
     }
 
     /**
      * Get List of all order when new webhook received.
-     * @return array
+     * @return DigikalaService
      * @throws Exceptions\UnauthorizedException
      * @throws OrdersNotArrayException
+     * @throws ListOrdersShouldBeOrderNModelException
      */
-    public function orders(): array
+    public function orders(): DigikalaService
     {
         return $this->getListOrdersFromWebhook();
     }
@@ -193,7 +199,7 @@ class DigikalaService
      *
      * @param $function
      * @return DigikalaService
-     * @throws OrdersNotArrayException
+     * @throws OrdersNotArrayException|ListOrdersShouldBeOrderNModelException
      */
     public function onGetOrder($function): DigikalaService
     {
@@ -202,9 +208,26 @@ class DigikalaService
             $function($this->orders);
             if ( ! is_array($this->orders) )
                 throw new OrdersNotArrayException();
+            foreach ( $this->orders as $order)
+                if( ! $order instanceof  Order )
+                    throw new ListOrdersShouldBeOrderNModelException();
         }
         else
             $this->function = $function;
         return $this;
+    }
+
+    /**
+     * get list of all orders per each webhook call
+     * @return array
+     */
+    public function getOrders($isPassByReference = false): array
+    {
+        if ( $isPassByReference )
+            return $this->orders;
+        $result = [];
+        foreach ( $this->orders as $order)
+            $result[] = clone $order;
+        return $result;
     }
 }

@@ -4,6 +4,7 @@ namespace Yeganehha\DigikalaSellerWebhook\Tests;
 
 use Yeganehha\DigikalaSellerWebhook\DigikalaService;
 use PHPUnit\Framework\TestCase;
+use Yeganehha\DigikalaSellerWebhook\Exceptions\ListOrdersShouldBeOrderNModelException;
 use Yeganehha\DigikalaSellerWebhook\Exceptions\OrdersNotArrayException;
 use Yeganehha\DigikalaSellerWebhook\Exceptions\UnauthorizedException;
 
@@ -27,7 +28,7 @@ class DigikalaServiceTest extends TestCase
     public function testGetOrdersWithOutToken(){
         $digikala = new DigikalaService();
         $digikala->orders();
-        $this->assertIsArray($digikala->orders[0]->variant->price);
+        $this->assertIsArray($digikala->getOrders()[0]->variant->price);
     }
 
     /**
@@ -36,7 +37,7 @@ class DigikalaServiceTest extends TestCase
     public function testGetOrdersWithToken(){
         $digikala = new DigikalaService(PHPUnitUtil::$token);
         $digikala->orders();
-        $this->assertIsArray($digikala->orders[0]->variant->price);
+        $this->assertIsArray($digikala->getOrders()[0]->variant->price);
     }
 
     /**
@@ -52,11 +53,11 @@ class DigikalaServiceTest extends TestCase
      * @throws UnauthorizedException|OrdersNotArrayException
      */
     public function testCustomizeOrderBeforeReceive(){
+        $this->expectException(ListOrdersShouldBeOrderNModelException::class);
         $digikala = new DigikalaService();
         $digikala->onGetOrder(function (&$orders){
             $orders = ["Orders update to string and order id is:". $orders[0]->order_id];
         })->orders();
-        $this->assertEquals(["Orders update to string and order id is:171942704"], $digikala->orders);
     }
 
     /**
@@ -90,18 +91,19 @@ class DigikalaServiceTest extends TestCase
         $digikala->onGetOrder(function ($orders){
             $orders[0]->order_id = 1234;
         })->orders();
-        $this->assertEquals(1234, $digikala->orders[0]->order_id);
+        $this->assertEquals(1234, $digikala->getOrders()[0]->order_id);
     }
 
     /**
      * @throws UnauthorizedException|OrdersNotArrayException
+     * @throws ListOrdersShouldBeOrderNModelException
      */
     public function testCustomizeOrderAfterGetOrders(){
         $digikala = new DigikalaService();
-        $previousOrders = $digikala->orders();
+        $previousOrders = $digikala->orders()->getOrders();
         $digikala->onGetOrder(function ($ordersItems){
             $ordersItems[0]->order_id = 1234;
         });
-        $this->assertEquals([171942704 , 1234], [$previousOrders[0]->order_id,$digikala->orders[0]->order_id]);
+        $this->assertEquals([171942704 , 1234], [$previousOrders[0]->order_id,$digikala->getOrders()[0]->order_id]);
     }
 }
