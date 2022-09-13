@@ -98,12 +98,38 @@ class DigikalaServiceTest extends TestCase
      * @throws UnauthorizedException|OrdersNotArrayException
      * @throws ListOrdersShouldBeOrderNModelException
      */
-    public function testCustomizeOrderAfterGetOrders(){
+    public function testCustomizeOrderAfterGetOrdersFetchByValue(){
         $digikala = new DigikalaService();
         $previousOrders = $digikala->orders()->getOrders();
         $digikala->onGetOrder(function ($ordersItems){
             $ordersItems[0]->order_id = 1234;
         });
-        $this->assertEquals([171942704 , 1234], [$previousOrders[0]->order_id,$digikala->getOrders()[0]->order_id]);
+        $this->assertEquals(171942704 , $previousOrders[0]->order_id);
+    }
+
+    /**
+     * @throws UnauthorizedException|OrdersNotArrayException
+     * @throws ListOrdersShouldBeOrderNModelException
+     */
+    public function testCustomizeOrderAfterGetOrdersFetchByReference(){
+        $digikala = new DigikalaService();
+        $referenceOrders = $digikala->orders()->getOrders(true);
+        $digikala->onGetOrder(function ($ordersItems){
+            $ordersItems[0]->order_id = 1234;
+        });
+        $this->assertEquals(1234 , $referenceOrders[0]->order_id);
+    }
+
+    /**
+     * @throws UnauthorizedException|OrdersNotArrayException
+     * @throws ListOrdersShouldBeOrderNModelException
+     */
+    public function testCustomizeOrderAfterGetOrders(){
+        $digikala = new DigikalaService();
+        $digikala->orders();
+        $digikala->onGetOrder(function ($ordersItems){
+            $ordersItems[0]->order_id = 1234;
+        });
+        $this->assertEquals(1234, $digikala->getOrders()[0]->order_id);
     }
 }
