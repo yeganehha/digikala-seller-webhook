@@ -11,6 +11,9 @@
     ],
     "homepage": "https://github.com/yeganehha/digikala-seller-webhook",
     "autoload": {
+        "files": [
+            "src/helpers.php"
+        ],
         "psr-4": {
             "Yeganehha\\DigikalaSellerWebhook\\": "src/"
         }
@@ -29,7 +32,8 @@
         }
     ],
     "require": {
-        "php": ">=7.2"
+        "php": ">=7.2",
+        "ext-json": "*"
     },
     "suggest": {
         "ext-soap": "Needed to support some drivers that required SOAP"
@@ -39,6 +43,6 @@
         "phpunit/phpunit": "9"
     },
     "scripts": {
-        "test": "phpunit tests  --testdox"
+        "test": "phpunit tests"
     }
 }
