@@ -4,6 +4,8 @@
 namespace Yeganehha\DigikalaSellerWebhook;
 
 
+use Yeganehha\DigikalaSellerWebhook\Exceptions\OrdersNotArrayException;
+
 class DigikalaService
 {
     /**
@@ -40,6 +42,12 @@ class DigikalaService
      */
     public $orders = [];
 
+
+    /**
+     * execute custom code, when orders receive. Exp: update order or call api or etc.
+     * @var null
+     */
+    public $function = null ;
 
     /**
      * Provide Digikala webhook token for authorization. You can find the token
@@ -139,11 +147,20 @@ class DigikalaService
      * Get List of all order when new webhook received.
      * @return array
      * @throws Exceptions\UnauthorizedException
+     * @throws OrdersNotArrayException
      */
     public function getListOrdersFromWebhook(): array
     {
         $WebhookHandler = new WebhookHandler($this->webhook_token);
         $this->orders = $WebhookHandler->getOrders();
+
+        // customize orders
+        if ( $this->function != null )
+            ($this->function)($this->orders);
+
+        if ( ! is_array($this->orders) )
+            throw new OrdersNotArrayException();
+
         if ( $this->update_quantity )
         {
             //Todo : add auto update quantity
@@ -159,9 +176,35 @@ class DigikalaService
      * Get List of all order when new webhook received.
      * @return array
      * @throws Exceptions\UnauthorizedException
+     * @throws OrdersNotArrayException
      */
     public function orders(): array
     {
         return $this->getListOrdersFromWebhook();
+    }
+
+    /**
+     * execute custom code, when orders receive. Exp: update order or call api or etc.
+     *
+     * Example:
+     * $digikala->onGetOrder(function(&orders) { $orders = [] ; } ); // change orders to empty
+     * $digikala->onGetOrder(function(&orders) { $orders[0]->order_id = 1234 ; } ); // change order id of first order
+     * $digikala->onGetOrder(function(orders) { var_dump($orders) } ); // show all orders
+     *
+     * @param $function
+     * @return DigikalaService
+     * @throws OrdersNotArrayException
+     */
+    public function onGetOrder($function): DigikalaService
+    {
+        if ( ! empty($this->orders) )
+        {
+            $function($this->orders);
+            if ( ! is_array($this->orders) )
+                throw new OrdersNotArrayException();
+        }
+        else
+            $this->function = $function;
+        return $this;
     }
 }

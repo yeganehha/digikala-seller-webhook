@@ -5,7 +5,6 @@ namespace Yeganehha\DigikalaSellerWebhook\Tests;
 use PHPUnit\Framework\TestCase;
 use Yeganehha\DigikalaSellerWebhook\DigikalaService;
 use Yeganehha\DigikalaSellerWebhook\Exceptions\UnauthorizedException;
-use Yeganehha\DigikalaSellerWebhook\WebhookHandler;
 
 class HelpersTest extends TestCase
 {
