@@ -4,7 +4,9 @@
 namespace Yeganehha\DigikalaSellerWebhook\Exceptions;
 
 
-class UnauthorizedException extends \Exception
+use Exception;
+
+class UnauthorizedException extends Exception
 {
     public function __construct() {
         parent::__construct('Token is not valid! when process '.$this->getFile()

@@ -2,6 +2,7 @@
 
 namespace Yeganehha\DigikalaSellerWebhook\Tests;
 
+use ReflectionException;
 use Yeganehha\DigikalaSellerWebhook\Exceptions\UnauthorizedException;
 use Yeganehha\DigikalaSellerWebhook\WebhookHandler;
 use PHPUnit\Framework\TestCase;
@@ -17,6 +18,9 @@ class WebhookHandlerTest extends TestCase
         PHPUnitUtil::setCONTENT(false , true);
     }
 
+    /**
+     * @throws ReflectionException
+     */
     public function testGetAuthenticateHeader(): void
     {
         $object = new WebhookHandler();
@@ -28,6 +32,9 @@ class WebhookHandlerTest extends TestCase
     }
 
 
+    /**
+     * @throws ReflectionException
+     */
     public function testGetEmptyAuthenticateHeader(): void
     {
         PHPUnitUtil::setToken(false);
@@ -39,6 +46,9 @@ class WebhookHandlerTest extends TestCase
             ]);
     }
 
+    /**
+     * @throws ReflectionException
+     */
     public function testAuthenticateIgnoreEmptyTokenWithCorrectHeaderToken(){
         $object = new WebhookHandler();
         $headersValue = PHPUnitUtil::callMethod($object,'requestHeaders',array());
@@ -46,6 +56,9 @@ class WebhookHandlerTest extends TestCase
         $this->assertTrue($isAuthenticate);
     }
 
+    /**
+     * @throws ReflectionException
+     */
     public function testAuthenticateIgnoreEmptyTokenWithWrongHeaderToken(){
         PHPUnitUtil::setToken(false);
         $object = new WebhookHandler();
@@ -54,6 +67,9 @@ class WebhookHandlerTest extends TestCase
         $this->assertTrue($isAuthenticate);
     }
 
+    /**
+     * @throws ReflectionException
+     */
     public function testAuthenticateCorrectHeaderToken(){
         $object = new WebhookHandler(PHPUnitUtil::$token);
         $headersValue = PHPUnitUtil::callMethod($object,'requestHeaders',array());
@@ -61,6 +77,9 @@ class WebhookHandlerTest extends TestCase
         $this->assertTrue($isAuthenticate);
     }
 
+    /**
+     * @throws ReflectionException
+     */
     public function testAuthenticateWrongHeaderToken(){
         PHPUnitUtil::setToken(false);
         $object = new WebhookHandler(PHPUnitUtil::$token);
@@ -70,12 +89,18 @@ class WebhookHandlerTest extends TestCase
     }
 
 
+    /**
+     * @throws ReflectionException
+     */
     public function testReceiveFromContactRequest(){
         $object = new WebhookHandler();
         $body = PHPUnitUtil::callMethod($object,'requestBody',array());
         $this->assertEquals($body , PHPUnitUtil::$order);
     }
 
+    /**
+     * @throws ReflectionException
+     */
     public function testReceiveEmptyContactRequestWithOutPost(){
         PHPUnitUtil::setCONTENT(true , true);
         $object = new WebhookHandler();
