@@ -4,29 +4,27 @@
 namespace Yeganehha\DigikalaSellerWebhook;
 
 
-use Yeganehha\DigikalaSellerWebhook\Model\Order;
-
 class DigikalaService
 {
     /**
      * in your panel at https://seller.digikala.com/api/webhook/
      * @var null
      */
-    private $webhook_token = null;
+    private $webhook_token;
 
 
     /**
      * in your panel at https://seller.digikala.com/api
      * @var null
      */
-    private $api_token = null;
+    private $api_token;
 
 
     /**
      * Reduce quantity of same product when new order received.
      * @var bool
      */
-    private $update_quantity = true;
+    private $update_quantity;
 
 
     /**

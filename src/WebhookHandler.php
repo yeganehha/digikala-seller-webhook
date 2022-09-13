@@ -10,9 +10,9 @@ class WebhookHandler
     /**
      * Provide Digikala webhook token for authorization. You can find the token
      * in your panel at https://seller.digikala.com/api/webhook/
-     * @param string $token
+     * @param string|null $token
      */
-    public function __construct($token = null)
+    public function __construct(string $token = null)
     {
         $this->token = $token;
     }
@@ -20,6 +20,7 @@ class WebhookHandler
     /**
      * Calling to function will analyze the request coming from Digikala and if
      * it is a valid data, it will return an array containing order items.
+     * @throws UnauthorizedException
      */
     public function getOrders() : array
     {
@@ -38,7 +39,7 @@ class WebhookHandler
         return $ordersObject;
     }
 
-    private function authorization($headers)
+    private function authorization($headers): bool
     {
         return $this->token == null || !empty($headers['Authorization']) && $headers['Authorization'] == $this->token;
     }
