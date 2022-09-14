@@ -16,6 +16,7 @@ class DigikalaServiceTest extends TestCase
         parent::setUp();
         PHPUnitUtil::setToken(true);
         PHPUnitUtil::setCONTENT(false , true);
+        APIHandler::setToken(PHPUnitUtil::$APIToken);
     }
 
 
@@ -27,8 +28,9 @@ class DigikalaServiceTest extends TestCase
      * @throws UnauthorizedException|OrdersNotArrayException|ListOrdersShouldBeOrderNModelException
      */
     public function testGetOrdersWithOutToken(){
+        APIHandler::$handler = null ;
         $digikala = new DigikalaService();
-        $digikala->orders();
+        $digikala->UpdateQuantityManually()->orders();
         $this->assertIsArray($digikala->getOrders()[0]->variant->price);
     }
 
@@ -37,14 +39,14 @@ class DigikalaServiceTest extends TestCase
      */
     public function testGetOrdersWithToken(){
         $digikala = new DigikalaService(PHPUnitUtil::$token);
-        $digikala->orders();
+        $digikala->UpdateQuantityManually()->orders();
         $this->assertIsArray($digikala->getOrders()[0]->variant->price);
     }
 
     /**
      * @throws UnauthorizedException|OrdersNotArrayException|ListOrdersShouldBeOrderNModelException
      */
-    public function testGetOrdersWithWongToken(){
+    public function testGetOrdersWithWrongToken(){
         $this->expectException(UnauthorizedException::class);
         $digikala = new DigikalaService("wrong token");
         $digikala->orders();
@@ -78,6 +80,7 @@ class DigikalaServiceTest extends TestCase
     public function testCustomizeOrderSyntaxErrorAfter(){
         $this->expectException(OrdersNotArrayException::class);
         $digikala = new DigikalaService();
+        $digikala->UpdateQuantityManually();
         $digikala->orders();
         $digikala->onGetOrder(function (&$orders){
             $orders = null;
@@ -89,7 +92,7 @@ class DigikalaServiceTest extends TestCase
      */
     public function testCustomizeOrderChangeVariables(){
         $digikala = new DigikalaService();
-        $digikala->onGetOrder(function ($orders){
+        $digikala->UpdateQuantityManually()->onGetOrder(function ($orders){
             $orders[0]->order_id = 1234;
         })->orders();
         $this->assertEquals(1234, $digikala->getOrders()[0]->order_id);
@@ -101,6 +104,7 @@ class DigikalaServiceTest extends TestCase
      */
     public function testCustomizeOrderAfterGetOrdersFetchByValue(){
         $digikala = new DigikalaService();
+        $digikala->UpdateQuantityManually();
         $previousOrders = $digikala->orders()->getOrders();
         $digikala->getOrders(true);
         $digikala->onGetOrder(function ($ordersItems){
@@ -115,6 +119,7 @@ class DigikalaServiceTest extends TestCase
      */
     public function testCustomizeOrderAfterGetOrdersFetchByReference(){
         $digikala = new DigikalaService();
+        $digikala->UpdateQuantityManually();
         $referenceOrders = $digikala->orders()->getOrders(true);
         $digikala->onGetOrder(function ($ordersItems){
             $ordersItems[0]->order_id = 1234;
@@ -128,6 +133,7 @@ class DigikalaServiceTest extends TestCase
      */
     public function testCustomizeOrderAfterGetOrders(){
         $digikala = new DigikalaService();
+        $digikala->UpdateQuantityManually();
         $digikala->orders();
         $digikala->onGetOrder(function ($ordersItems){
             $ordersItems[0]->order_id = 1234;

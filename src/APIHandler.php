@@ -4,6 +4,8 @@ namespace Yeganehha\DigikalaSellerWebhook;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use stdClass;
 
 class APIHandler
@@ -75,6 +77,8 @@ class APIHandler
         $update = array_intersect_key($update, array_flip($allowSearchParameter));
         $response = self::call('variants/'.$variantID.'/' , [] , $update , "put" );
         if(self::$callStatus and $response->status == "ok" ) {
+            $logger = new Logger('update_variant');
+            $logger->info('Update Variant ID: '.$variantID , $update);
             return true;
         }
         return false;
@@ -89,10 +93,14 @@ class APIHandler
     public static function updateAllVariantSupplierCode(string $supplier_code , array $update) :bool
     {
         $result = true ;
+        $logger = new Logger('update_all_variant');
+        $logger->pushHandler(new StreamHandler(__DIR__.'/my_app.log', Logger::INFO));
+        $logger->info('Update Variant Code: '.$supplier_code);
         $variants = self::getVariants(['supplier_code' => $supplier_code]);
         foreach ($variants as $variant){
             $temp = self::updateVariant($variant->id , $update);
             $result = ($temp and $result) ;
+            $logger->info('ID: '.$supplier_code , ['original' =>$variant , 'update' => $update]);
         }
         return $result;
     }

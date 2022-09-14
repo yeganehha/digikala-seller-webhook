@@ -26,14 +26,14 @@ class HelpersTest extends TestCase
      * @throws UnauthorizedException|OrdersNotArrayException|ListOrdersShouldBeOrderNModelException
      */
     public function testDigikalaGetOrdersFunction(){
-        $this->assertIsArray(digikala_order()[0]->variant->price);
+        $this->assertIsArray(digikala_order(null,null,false)[0]->variant->price);
     }
 
     /**
      * @throws UnauthorizedException|OrdersNotArrayException|ListOrdersShouldBeOrderNModelException
      */
     public function testDigikalaGetOrdersFunctionWithToken(){
-        $this->assertIsArray(digikala_order(PHPUnitUtil::$token)[0]->variant->price);
+        $this->assertIsArray(digikala_order(PHPUnitUtil::$token,null,false)[0]->variant->price);
     }
 
     /**

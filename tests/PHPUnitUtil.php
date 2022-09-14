@@ -4,8 +4,12 @@
 namespace Yeganehha\DigikalaSellerWebhook\Tests;
 
 
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
 use ReflectionClass;
 use ReflectionException;
+use Yeganehha\DigikalaSellerWebhook\APIHandler;
 
 class PHPUnitUtil
 {
@@ -32,5 +36,37 @@ class PHPUnitUtil
         $method = $class->getMethod($name);
         $method->setAccessible(true);
         return $method->invokeArgs($obj, $args);
+    }
+
+    public static function listVariantMockHandler(){
+        $mock = new MockHandler([
+            new Response(200,[], PHPUnitUtil::$listVariants),
+        ]);
+        $handlerStack = HandlerStack::create($mock);
+        APIHandler::$handler = $handlerStack;
+    }
+    public static function updateAllVariantMockHandler(){
+        $data = json_decode(PHPUnitUtil::$listVariants);
+        $responses = [new Response(200,[], PHPUnitUtil::$listVariants)];
+        foreach ($data->data->items as $item){
+            $item->supplier_code = 'LENOVO-LP3 PRO-BLACK';
+            $responses[] = new Response(200,[], json_encode([
+                'status' => 'ok',
+                'data' => $item
+            ]));
+        }
+        $mock = new MockHandler($responses);
+        $handlerStack = HandlerStack::create($mock);
+        APIHandler::$handler = $handlerStack;
+    }
+
+    public static function updateVariantMockHandler($status){
+        $data = json_decode(PHPUnitUtil::$updateVariants);
+        $data->status = $status;
+        $mock = new MockHandler([
+            new Response($status == "ok" ? 200 : $status,[], json_encode($data)),
+        ]);
+        $handlerStack = HandlerStack::create($mock);
+        APIHandler::$handler = $handlerStack;
     }
 }

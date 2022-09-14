@@ -4,6 +4,8 @@
 namespace Yeganehha\DigikalaSellerWebhook;
 
 
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Yeganehha\DigikalaSellerWebhook\Exceptions\ListOrdersShouldBeOrderNModelException;
 use Yeganehha\DigikalaSellerWebhook\Exceptions\OrdersNotArrayException;
 use Yeganehha\DigikalaSellerWebhook\Model\Order;
@@ -152,6 +154,7 @@ class DigikalaService
      * @return DigikalaService
      * @throws Exceptions\UnauthorizedException
      * @throws OrdersNotArrayException|ListOrdersShouldBeOrderNModelException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function getListOrdersFromWebhook(): DigikalaService
     {
@@ -175,7 +178,8 @@ class DigikalaService
         }
         if ( $this->send_notification )
         {
-            //Todo : add send order notification
+            $logger = new Logger('update_all_variant');
+            $logger->pushHandler(new StreamHandler(__DIR__.'/my_app.log', Logger::INFO));
         }
         return $this;
     }

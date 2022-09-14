@@ -1,5 +1,6 @@
 <?php
 namespace Yeganehha\DigikalaSellerWebhook;
+use Monolog\Logger;
 use Yeganehha\DigikalaSellerWebhook\Exceptions\UnauthorizedException;
 use Yeganehha\DigikalaSellerWebhook\Model\Order;
 
@@ -32,9 +33,14 @@ class WebhookHandler
 
         $body = $this->requestBody();
         $ordersObject = [];
-        $orders = json_decode($body, true);
-        foreach ($orders as $order)
-            $ordersObject[] = Order::get()->setFromArray($order);
+        $orders = json_decode($body, true) ?? [];
+
+        $logger = new Logger('new_order');
+        foreach ($orders as $order) {
+            $temporary = Order::get()->setFromArray($order);
+            $ordersObject[] = $temporary;
+            $logger->info('New Order received' , ['order' => $temporary]);
+        }
 
         return $ordersObject;
     }

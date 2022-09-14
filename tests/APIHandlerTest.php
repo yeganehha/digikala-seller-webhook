@@ -21,38 +21,6 @@ class APIHandlerTest extends TestCase
         APIHandler::setToken(PHPUnitUtil::$APIToken);
     }
 
-    private function listVariantMockHandler(){
-        $mock = new MockHandler([
-            new Response(200,[], PHPUnitUtil::$listVariants),
-        ]);
-        $handlerStack = HandlerStack::create($mock);
-        APIHandler::$handler = $handlerStack;
-    }
-    private function updateAllVariantMockHandler(){
-        $data = json_decode(PHPUnitUtil::$listVariants);
-        $responses = [new Response(200,[], PHPUnitUtil::$listVariants)];
-        foreach ($data->data->items as $item){
-            $item->supplier_code = 'LENOVO-LP3 PRO-BLACK';
-            $responses[] = new Response(200,[], json_encode([
-                'status' => 'ok',
-                'data' => $item
-            ]));
-        }
-        $mock = new MockHandler($responses);
-        $handlerStack = HandlerStack::create($mock);
-        APIHandler::$handler = $handlerStack;
-    }
-
-    private function updateVariantMockHandler($status){
-        $data = json_decode(PHPUnitUtil::$updateVariants);
-        $data->status = $status;
-        $mock = new MockHandler([
-            new Response($status == "ok" ? 200 : $status,[], json_encode($data)),
-        ]);
-        $handlerStack = HandlerStack::create($mock);
-        APIHandler::$handler = $handlerStack;
-    }
-
     public function testSetToken()
     {
         $this->assertEquals(PHPUnitUtil::$APIToken , APIHandler::$token);
@@ -81,7 +49,7 @@ class APIHandlerTest extends TestCase
      */
     public function testGetVariantsWithSearchOption()
     {
-        $this->listVariantMockHandler();
+        PHPUnitUtil::listVariantMockHandler();
         $variants = APIHandler::getVariants(['supplier_code'=>'LENOVO-XT90-BLACK']);
         $this->assertIsArray($variants);
     }
@@ -91,7 +59,7 @@ class APIHandlerTest extends TestCase
      */
     public function testGetAllVariants()
     {
-        $this->listVariantMockHandler();
+        PHPUnitUtil::listVariantMockHandler();
         $variants = APIHandler::getVariants(['supplier_code'=>'LENOVO-XT90-BLACK']);
         $this->assertCount(4, $variants);
     }
@@ -101,7 +69,7 @@ class APIHandlerTest extends TestCase
      */
     public function testSearchVariantsCorrect()
     {
-        $this->listVariantMockHandler();
+        PHPUnitUtil::listVariantMockHandler();
         $variants = APIHandler::getVariants(['supplier_code'=>'LENOVO-XT90-BLACK']);
         foreach ($variants as $variant)
             $this->assertEquals('LENOVO-XT90-BLACK' ,$variant->supplier_code );
@@ -112,7 +80,7 @@ class APIHandlerTest extends TestCase
      */
     public function testUpdateVariant()
     {
-        $this->updateVariantMockHandler("ok");
+        PHPUnitUtil::updateVariantMockHandler("ok");
         $result = APIHandler::updateVariant(33088959 , ['supplier_code'=>'LENOVO-LP3 PRO-BLACK']);
         $this->assertTrue($result);
     }
@@ -123,7 +91,7 @@ class APIHandlerTest extends TestCase
     public function testUpdateUnknownVariant()
     {
         $this->expectException(ClientException::class);
-        $this->updateVariantMockHandler(404);
+        PHPUnitUtil::updateVariantMockHandler(404);
         APIHandler::updateVariant(1 , ['supplier_code'=>'LENOVO-LP3 PRO-BLACK']);
     }
 
@@ -132,7 +100,7 @@ class APIHandlerTest extends TestCase
      */
     public function testUpdateAllVariantBySupplierCode()
     {
-        $this->updateAllVariantMockHandler();
+        PHPUnitUtil::updateAllVariantMockHandler();
         $result = APIHandler::updateAllVariantSupplierCode('LENOVO-XT90-BLACK' , ['supplier_code'=>'LENOVO-LP3 PRO-BLACK']);
         $this->assertTrue($result);
     }
