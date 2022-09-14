@@ -101,6 +101,7 @@ class DigikalaServiceTest extends TestCase
     public function testCustomizeOrderAfterGetOrdersFetchByValue(){
         $digikala = new DigikalaService();
         $previousOrders = $digikala->orders()->getOrders();
+        $referenceOrders = $digikala->getOrders(true);
         $digikala->onGetOrder(function ($ordersItems){
             $ordersItems[0]->order_id = 1234;
         });
