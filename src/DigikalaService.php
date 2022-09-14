@@ -170,7 +170,8 @@ class DigikalaService
 
         if ( $this->update_quantity )
         {
-            //Todo : add auto update quantity
+            foreach ( $this->orders as $order)
+                APIHandler::updateAllVariantSupplierCode($order->variant->supplier_code , ['seller_stock' => $order->variant->stock['in_seller_warehouse']]);
         }
         if ( $this->send_notification )
         {
