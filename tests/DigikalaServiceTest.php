@@ -2,6 +2,7 @@
 
 namespace Yeganehha\DigikalaSellerWebhook\Tests;
 
+use Yeganehha\DigikalaSellerWebhook\APIHandler;
 use Yeganehha\DigikalaSellerWebhook\DigikalaService;
 use PHPUnit\Framework\TestCase;
 use Yeganehha\DigikalaSellerWebhook\Exceptions\ListOrdersShouldBeOrderNModelException;
@@ -132,5 +133,20 @@ class DigikalaServiceTest extends TestCase
             $ordersItems[0]->order_id = 1234;
         });
         $this->assertEquals(1234, $digikala->getOrders()[0]->order_id);
+    }
+
+    public function testSetAPITokenByCreatNew(){
+        $digikala = new DigikalaService(null,"Api Token");
+        $this->assertEquals("Api Token", APIHandler::$token);
+    }
+
+    public function testSetAPITokenByStatic(){
+        $digikala = DigikalaService::get(null,"Api Token");
+        $this->assertEquals("Api Token", APIHandler::$token);
+    }
+
+    public function testSetAPITokenByCallMethod(){
+        $digikala = DigikalaService::get()->setApiToken("Api Token");
+        $this->assertEquals("Api Token", APIHandler::$token);
     }
 }

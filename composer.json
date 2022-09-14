@@ -33,7 +33,8 @@
     ],
     "require": {
         "php": ">=7.2",
-        "ext-json": "*"
+        "ext-json": "*",
+        "guzzlehttp/guzzle": "7.5.x-dev"
     },
     "suggest": {
         "ext-soap": "Needed to support some drivers that required SOAP"

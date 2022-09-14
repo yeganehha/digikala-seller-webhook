@@ -68,6 +68,7 @@ class DigikalaService
         $this->webhook_token = $webhook_token;
         $this->api_token = $api_token;
         $this->update_quantity = $update_quantity;
+        APIHandler::setToken($this->api_token);
     }
 
     /**
@@ -102,6 +103,7 @@ class DigikalaService
     public function setApiToken($api_token): DigikalaService
     {
         $this->api_token = $api_token;
+        APIHandler::setToken($this->api_token);
         return $this;
     }
 
