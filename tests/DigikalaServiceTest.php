@@ -24,7 +24,7 @@ class DigikalaServiceTest extends TestCase
     }
 
     /**
-     * @throws UnauthorizedException|OrdersNotArrayException
+     * @throws UnauthorizedException|OrdersNotArrayException|ListOrdersShouldBeOrderNModelException
      */
     public function testGetOrdersWithOutToken(){
         $digikala = new DigikalaService();
@@ -33,7 +33,7 @@ class DigikalaServiceTest extends TestCase
     }
 
     /**
-     * @throws UnauthorizedException|OrdersNotArrayException
+     * @throws UnauthorizedException|OrdersNotArrayException|ListOrdersShouldBeOrderNModelException
      */
     public function testGetOrdersWithToken(){
         $digikala = new DigikalaService(PHPUnitUtil::$token);
@@ -42,7 +42,7 @@ class DigikalaServiceTest extends TestCase
     }
 
     /**
-     * @throws UnauthorizedException|OrdersNotArrayException
+     * @throws UnauthorizedException|OrdersNotArrayException|ListOrdersShouldBeOrderNModelException
      */
     public function testGetOrdersWithWongToken(){
         $this->expectException(UnauthorizedException::class);
@@ -62,7 +62,7 @@ class DigikalaServiceTest extends TestCase
     }
 
     /**
-     * @throws UnauthorizedException
+     * @throws UnauthorizedException|ListOrdersShouldBeOrderNModelException
      */
     public function testCustomizeOrderSyntaxError(){
         $this->expectException(OrdersNotArrayException::class);
@@ -73,7 +73,7 @@ class DigikalaServiceTest extends TestCase
     }
 
     /**
-     * @throws UnauthorizedException
+     * @throws UnauthorizedException|ListOrdersShouldBeOrderNModelException
      */
     public function testCustomizeOrderSyntaxErrorAfter(){
         $this->expectException(OrdersNotArrayException::class);
@@ -85,7 +85,7 @@ class DigikalaServiceTest extends TestCase
     }
 
     /**
-     * @throws UnauthorizedException|OrdersNotArrayException
+     * @throws UnauthorizedException|OrdersNotArrayException|ListOrdersShouldBeOrderNModelException
      */
     public function testCustomizeOrderChangeVariables(){
         $digikala = new DigikalaService();
@@ -102,7 +102,7 @@ class DigikalaServiceTest extends TestCase
     public function testCustomizeOrderAfterGetOrdersFetchByValue(){
         $digikala = new DigikalaService();
         $previousOrders = $digikala->orders()->getOrders();
-        $referenceOrders = $digikala->getOrders(true);
+        $digikala->getOrders(true);
         $digikala->onGetOrder(function ($ordersItems){
             $ordersItems[0]->order_id = 1234;
         });
@@ -136,17 +136,17 @@ class DigikalaServiceTest extends TestCase
     }
 
     public function testSetAPITokenByCreatNew(){
-        $digikala = new DigikalaService(null,"Api Token");
+        new DigikalaService(null,"Api Token");
         $this->assertEquals("Api Token", APIHandler::$token);
     }
 
     public function testSetAPITokenByStatic(){
-        $digikala = DigikalaService::get(null,"Api Token");
+        DigikalaService::get(null,"Api Token");
         $this->assertEquals("Api Token", APIHandler::$token);
     }
 
     public function testSetAPITokenByCallMethod(){
-        $digikala = DigikalaService::get()->setApiToken("Api Token");
+        DigikalaService::get()->setApiToken("Api Token");
         $this->assertEquals("Api Token", APIHandler::$token);
     }
 }

@@ -85,10 +85,10 @@ class DigikalaService
     /**
      * Provide Digikala webhook token for authorization. You can find the token
      * in your panel at https://seller.digikala.com/api/webhook/
-     * @param null $webhook_token
+     * @param string|null $webhook_token
      * @return DigikalaService
      */
-    public function setWebhookToken($webhook_token): DigikalaService
+    public function setWebhookToken(?string $webhook_token): DigikalaService
     {
         $this->webhook_token = $webhook_token;
         return $this;
@@ -97,10 +97,10 @@ class DigikalaService
     /**
      * Provide Digikala token for authorization. You can find the token
      * in your panel at https://seller.digikala.com/api/
-     * @param null $api_token
+     * @param string|null $api_token
      * @return DigikalaService
      */
-    public function setApiToken($api_token): DigikalaService
+    public function setApiToken(?string $api_token): DigikalaService
     {
         $this->api_token = $api_token;
         APIHandler::setToken($this->api_token);
@@ -221,9 +221,10 @@ class DigikalaService
 
     /**
      * get list of all orders per each webhook call
+     * @param bool $isPassByReference
      * @return array
      */
-    public function getOrders($isPassByReference = false): array
+    public function getOrders(bool $isPassByReference = false): array
     {
         if ( $isPassByReference )
             return $this->orders;

@@ -3,8 +3,7 @@
 namespace Yeganehha\DigikalaSellerWebhook;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\HandlerStack;
-use phpDocumentor\Reflection\Types\Mixed_;
+use GuzzleHttp\Exception\GuzzleException;
 use stdClass;
 
 class APIHandler
@@ -34,7 +33,14 @@ class APIHandler
         return new static();
     }
 
-    public static function  getVariants($search = []){
+    /**
+     * Return all Variants
+     * @param array $search
+     * @return array
+     * @throws GuzzleException
+     */
+    public static function getVariants(array $search = []):array
+    {
         $allowSearchParameter = ['id','product_id','category_ids','brand_ids','has_warehouse_stock','shipping_type','is_active','is_archived','is_buy_box_winner','is_in_promotion','is_in_competition','supplier_code','active_b2b'];
         $search['search'] = array_intersect_key($search, array_flip($allowSearchParameter));
         $pageNumber = 1 ;
@@ -56,15 +62,50 @@ class APIHandler
         return $allVariants;
     }
 
+
+    /**
+     * @param int $variantID
+     * @param array $update
+     * @return bool
+     * @throws GuzzleException
+     */
+    public static function updateVariant(int $variantID , array $update) :bool
+    {
+        $allowSearchParameter = ['site','shipping_type','seller_stock','max_per_order','digikala_lead_time','ship_by_seller_lead_time','is_archived','is_active','price','gold_wage','non_gold_parts_cost','non_gold_parts_wage','gold_profit'];
+        $update = array_intersect_key($update, array_flip($allowSearchParameter));
+        $response = self::call('variants/'.$variantID.'/' , [] , $update , "put" );
+        if(self::$callStatus and $response->status == "ok" ) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param string $supplier_code
+     * @param array $update
+     * @return bool
+     * @throws GuzzleException
+     */
+    public static function updateAllVariantSupplierCode(string $supplier_code , array $update) :bool
+    {
+        $result = true ;
+        $variants = self::getVariants(['supplier_code' => $supplier_code]);
+        foreach ($variants as $variant){
+            $temp = self::updateVariant($variant->id , $update);
+            $result = ($temp and $result) ;
+        }
+        return $result;
+    }
+
     /**
      * @param $URI
      * @param array $query
      * @param array $body
      * @param string $method
      * @return stdClass
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      */
-    private static function call($URI , $query = [] , $body = [], $method = "GET"): stdClass
+    private static function call($URI , array $query = [] , array $body = [], string $method = "GET"): stdClass
     {
         self::$callStatus = false;
         $config['base_uri']  = self::$baseUri;

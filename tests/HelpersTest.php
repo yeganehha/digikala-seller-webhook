@@ -4,6 +4,8 @@ namespace Yeganehha\DigikalaSellerWebhook\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Yeganehha\DigikalaSellerWebhook\DigikalaService;
+use Yeganehha\DigikalaSellerWebhook\Exceptions\ListOrdersShouldBeOrderNModelException;
+use Yeganehha\DigikalaSellerWebhook\Exceptions\OrdersNotArrayException;
 use Yeganehha\DigikalaSellerWebhook\Exceptions\UnauthorizedException;
 
 class HelpersTest extends TestCase
@@ -21,21 +23,21 @@ class HelpersTest extends TestCase
     }
 
     /**
-     * @throws UnauthorizedException
+     * @throws UnauthorizedException|OrdersNotArrayException|ListOrdersShouldBeOrderNModelException
      */
     public function testDigikalaGetOrdersFunction(){
         $this->assertIsArray(digikala_order()[0]->variant->price);
     }
 
     /**
-     * @throws UnauthorizedException
+     * @throws UnauthorizedException|OrdersNotArrayException|ListOrdersShouldBeOrderNModelException
      */
     public function testDigikalaGetOrdersFunctionWithToken(){
         $this->assertIsArray(digikala_order(PHPUnitUtil::$token)[0]->variant->price);
     }
 
     /**
-     * @throws UnauthorizedException
+     * @throws UnauthorizedException|OrdersNotArrayException|ListOrdersShouldBeOrderNModelException
      */
     public function testDigikalaGetOrdersFunctionWithWrongToken(){
         $this->expectException(UnauthorizedException::class);
