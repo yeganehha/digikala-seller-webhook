@@ -4,6 +4,7 @@
 namespace Yeganehha\DigikalaSellerWebhook;
 
 
+use GuzzleHttp\Exception\GuzzleException as GuzzleExceptionAlias;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Yeganehha\DigikalaSellerWebhook\Exceptions\ListOrdersShouldBeOrderNModelException;
@@ -52,6 +53,9 @@ class DigikalaService
      * @var null
      */
     public $function = null ;
+
+    public $telegramWebHook = null ;
+    public $telegramChannel = null;
 
     /**
      * Provide Digikala webhook token for authorization. You can find the token
@@ -154,10 +158,19 @@ class DigikalaService
      * @return DigikalaService
      * @throws Exceptions\UnauthorizedException
      * @throws OrdersNotArrayException|ListOrdersShouldBeOrderNModelException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleExceptionAlias
      */
     public function getListOrdersFromWebhook(): DigikalaService
     {
+
+        if ( $this->send_notification )
+        {
+
+            if ( $this->telegramWebHook ){
+
+            }
+        }
+
         $WebhookHandler = new WebhookHandler($this->webhook_token);
         $this->orders = $WebhookHandler->getOrders();
 
@@ -176,11 +189,6 @@ class DigikalaService
             foreach ( $this->orders as $order)
                 APIHandler::updateAllVariantSupplierCode($order->variant->supplier_code , ['seller_stock' => $order->variant->stock['in_seller_warehouse']]);
         }
-        if ( $this->send_notification )
-        {
-            $logger = new Logger('update_all_variant');
-            $logger->pushHandler(new StreamHandler(__DIR__.'/my_app.log', Logger::INFO));
-        }
         return $this;
     }
 
@@ -190,6 +198,7 @@ class DigikalaService
      * @throws Exceptions\UnauthorizedException
      * @throws OrdersNotArrayException
      * @throws ListOrdersShouldBeOrderNModelException
+     * @throws GuzzleExceptionAlias
      */
     public function orders(): DigikalaService
     {

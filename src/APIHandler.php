@@ -75,7 +75,7 @@ class APIHandler
         $update = array_intersect_key($update, array_flip($allowSearchParameter));
         $response = self::call('variants/'.$variantID.'/' , [] , $update , "put" );
         if(self::$callStatus and $response->status == "ok" ) {
-            $logger = new Logger('update_variant');
+            $logger = Logger::make('update_variant_id_'.$variantID);
             $logger->info('Update Variant ID: '.$variantID , $update);
             return true;
         }
@@ -91,6 +91,7 @@ class APIHandler
     public static function updateAllVariantSupplierCode(string $supplier_code , array $update) :bool
     {
         $result = true ;
+        $logger = Logger::make('update_all_variant_of_'.$supplier_code);
         $logger->info('Update Variant Code: '.$supplier_code);
         $variants = self::getVariants(['supplier_code' => $supplier_code]);
         foreach ($variants as $variant){
