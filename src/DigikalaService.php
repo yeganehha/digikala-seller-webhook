@@ -5,6 +5,7 @@ namespace Yeganehha\DigikalaSellerWebhook;
 
 
 use GuzzleHttp\Exception\GuzzleException as GuzzleExceptionAlias;
+use Monolog\Handler\ProcessableHandlerInterface;
 use Yeganehha\DigikalaSellerWebhook\Exceptions\ListOrdersShouldBeOrderNModelException;
 use Yeganehha\DigikalaSellerWebhook\Exceptions\OrdersNotArrayException;
 use Yeganehha\DigikalaSellerWebhook\Loggers\Logger;
@@ -56,6 +57,7 @@ class DigikalaService
     public $telegramWebHook = null ;
     public $telegramChannel = null;
     public $discordWebHook = null;
+    public $customHandlers = null;
 
     /**
      * Provide Digikala webhook token for authorization. You can find the token
@@ -248,10 +250,57 @@ class DigikalaService
             Logger::$telegramWebhook = $this->telegramWebHook;
             Logger::$telegramChannel = $this->telegramChannel;
             Logger::$discordWebhook = $this->discordWebHook;
+            Logger::$CustomHandlers = $this->customHandlers;
         } else {
             Logger::$telegramWebhook = null;
             Logger::$telegramChannel = null;
             Logger::$discordWebhook = null;
+            Logger::$CustomHandlers = null;
         }
+    }
+
+    /**
+     * @param string|ProcessableHandlerInterface $telegramWebHook
+     * @param string|int|ProcessableHandlerInterface $telegramChannel
+     * @return DigikalaService
+     */
+    public function setTelegram($telegramWebHook , $telegramChannel) : DigikalaService
+    {
+        $this->telegramWebHook = $telegramWebHook;
+        $this->telegramChannel = $telegramChannel;
+        $this->initLogger();
+        return $this;
+    }
+
+    /**
+     * @param string|ProcessableHandlerInterface $discordWebHook
+     * @return DigikalaService
+     */
+    public function setDiscordWebHook($discordWebHook) : DigikalaService
+    {
+        $this->discordWebHook = $discordWebHook;
+        $this->initLogger();
+        return $this;
+    }
+
+    /**
+     * @param ProcessableHandlerInterface $customHandlers
+     * @return DigikalaService
+     */
+    public function setCustomHandlers(ProcessableHandlerInterface $customHandlers) : self
+    {
+        $this->customHandlers[] = $customHandlers;
+        $this->initLogger();
+        return $this;
+    }
+
+    /**
+     * @return DigikalaService
+     */
+    public function clearCustomHandlers() : self
+    {
+        $this->customHandlers =[] ;
+        $this->initLogger();
+        return $this;
     }
 }

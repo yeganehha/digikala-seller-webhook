@@ -40,7 +40,18 @@ class WebhookHandler
         foreach ($orders as $order) {
             $temporary = Order::get()->setFromArray($order);
             $ordersObject[] = $temporary;
-            $logger->info('New Order received' , ['order' => $temporary]);
+            $logger->info(
+                "🔴 New Order received.\n\n[All same variant](https://seller.digikala.com/productconfig/editinformation/?search%5Btype%5D=supplier_code&search%5Bvalue%5D=" . $temporary->variant->supplier_code
+                . ")     | [This variant](https://seller.digikala.com/productconfig/editinformation/?search%5Btype%5D=product_variant_id&search%5Bvalue%5D=" . $temporary->variant->id . ")\n [Show Order](https://seller.digikala.com/order/details/" . $temporary->variant->id . ")" ,
+                [
+                    'Title' => $temporary->variant->title,
+                    'Code' => $temporary->variant->supplier_code,
+                    'Price' => number_format($temporary->variant->price['selling_price']),
+                    'Quantity' => $temporary->quantity,
+                    'Stock Digikala' => $temporary->variant->stock['in_digikala_warehouse'],
+                    'Stock Seller' => $temporary->variant->stock['in_seller_warehouse'],
+                    'Order Id' => $temporary->order_id,
+                ]);
         }
 
         return $ordersObject;

@@ -16,6 +16,9 @@ class Order
     public $cart_closed_at;
     public $shipment_status;
     public $commitment_date;
+    /**
+     * @var Variant $variant
+     */
     public $variant;
 
     public static function get() : Order

@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 use Yeganehha\DigikalaSellerWebhook\Exceptions\ListOrdersShouldBeOrderNModelException;
 use Yeganehha\DigikalaSellerWebhook\Exceptions\OrdersNotArrayException;
 use Yeganehha\DigikalaSellerWebhook\Exceptions\UnauthorizedException;
+use Yeganehha\DigikalaSellerWebhook\Loggers\Logger;
 
 class DigikalaServiceTest extends TestCase
 {
@@ -154,5 +155,33 @@ class DigikalaServiceTest extends TestCase
     public function testSetAPITokenByCallMethod(){
         DigikalaService::get()->setApiToken("Api Token");
         $this->assertEquals("Api Token", APIHandler::$token);
+    }
+
+    public function testSetDiscordWebHook(){
+        DigikalaService::get()->setDiscordWebHook("Discord");
+        $this->assertEquals("Discord", Logger::$discordWebhook);
+    }
+
+    public function testSetTelegram(){
+        DigikalaService::get()->setTelegram("WebHook" , "Channel");
+        $this->assertEquals("WebHook", Logger::$telegramWebhook);
+        $this->assertEquals("Channel", Logger::$telegramChannel);
+        DigikalaService::get()->setTelegram("WebHook" , 123);
+        $this->assertEquals(123, Logger::$telegramChannel);
+    }
+
+    public function testTurnOffNotification(){
+        DigikalaService::get()->sendNotificationManually()->setTelegram("WebHook" , "Channel");
+        $this->assertNull(Logger::$telegramWebhook);
+        $this->assertNull(Logger::$telegramChannel);
+        DigikalaService::get()->sendNotificationManually()->setDiscordWebHook("Discord");
+        $this->assertNull(Logger::$discordWebhook);
+        DigikalaService::get()->sendNotificationManually()->setTelegram("WebHook" , "Channel");
+        $this->assertNull(Logger::$telegramWebhook);
+        $this->assertNull(Logger::$telegramChannel);
+        DigikalaService::get()->sendNotificationManually()->setDiscordWebHook("Discord");
+        $this->assertNull(Logger::$discordWebhook);
+        DigikalaService::get()->setDiscordWebHook("Discord")->sendNotificationAutomatically()->sendNotificationManually();
+        $this->assertNull(Logger::$discordWebhook);
     }
 }

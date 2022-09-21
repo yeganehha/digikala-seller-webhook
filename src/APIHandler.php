@@ -77,7 +77,7 @@ class APIHandler
         $response = self::call('variants/'.$variantID.'/' , [] , $update , "put" );
         if(self::$callStatus and $response->status == "ok" ) {
             $logger = Logger::make('update_variant_id_'.$variantID);
-            $logger->info('Update Variant ID: '.$variantID , $update);
+            $logger->emergency('Update Variant ID: '.$variantID , $update);
             return true;
         }
         return false;
@@ -93,13 +93,13 @@ class APIHandler
     {
         $result = true ;
         $logger = Logger::make('update_all_variant_of_'.$supplier_code);
-        $logger->info('Update Variant Code: '.$supplier_code);
+        $logger->alert('Update Variant Code: '.$supplier_code);
         $variants = self::getVariants(['supplier_code' => $supplier_code]);
         foreach ($variants as $variant){
             $temp = self::updateVariant($variant->id , $update);
             $result = ($temp and $result) ;
-            $logger->info('ID: '.$supplier_code , ['original' =>$variant , 'update' => $update]);
         }
+        $logger->info('All '.$supplier_code .' Was updated!' , ['original' =>$variant , 'update' => $update]);
         return $result;
     }
 

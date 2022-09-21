@@ -14,6 +14,7 @@ class Logger
     public static $telegramWebhook = null;
     public static $telegramChannel = null;
     public static $discordWebhook = null;
+    public static $CustomHandlers = [];
 
     /**
      * @throws MissingExtensionException
@@ -29,8 +30,11 @@ class Logger
             $logger->pushHandler(new TelegramBotHandler(self::$telegramWebhook, self::$telegramChannel ,Log::INFO , true,'MarkDown'));
 
         if ( self::$discordWebhook )
-            $logger->pushHandler(new DiscordWebhookHandler(self::$telegramWebhook, self::$telegramChannel ,Log::INFO , true,'MarkDown'));
+            $logger->pushHandler(new DiscordWebhookHandler(self::$discordWebhook,Log::INFO , true,DiscordWebhookHandler::Embed));
 
+        if ( self::$CustomHandlers )
+            foreach ( self::$CustomHandlers as $handler)
+                $logger->pushHandler($handler);
 
         self::$loggerObject[$name] = $logger ;
         return self::$loggerObject[$name];
