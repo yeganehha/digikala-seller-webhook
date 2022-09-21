@@ -3,17 +3,48 @@
     "description": "With the help of this package, you can be informed about the registration of a new order in Digikala through social networks (like Telegram, Discord, SMS, etc.) and automatically update the stock of other similar products.",
     "type": "library",
     "license": "MIT",
+    "keywords": [
+        "digikala",
+        "digikala api",
+        "digikala webhook",
+        "digikala seller"
+    ],
+    "homepage": "https://github.com/yeganehha/digikala-seller-webhook",
     "autoload": {
+        "files": [
+            "src/helpers.php"
+        ],
         "psr-4": {
             "Yeganehha\\DigikalaSellerWebhook\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Yeganehha\\DigikalaSellerWebhook\\Tests\\": "tests"
         }
     },
     "authors": [
         {
             "name": "Erfan Ebrahimi",
-            "email": "me@erfanebrahimi.ir"
+            "email": "me@erfanebrahimi.ir",
+            "homepage": "https://www.erfanebrahimi.ir/",
+            "role": "Developer"
         }
     ],
+    "require": {
+        "php": ">=7.2",
+        "ext-json": "*",
+        "guzzlehttp/guzzle": "7.5.x-dev",
+        "monolog/monolog": "2.x-dev"
+    },
+    "suggest": {
+        "ext-soap": "Needed to support some drivers that required SOAP"
+    },
     "minimum-stability": "dev",
-    "require": {}
+    "require-dev": {
+        "phpunit/phpunit": "9"
+    },
+    "scripts": {
+        "test": "phpunit tests"
+    }
 }
