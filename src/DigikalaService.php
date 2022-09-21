@@ -5,10 +5,9 @@ namespace Yeganehha\DigikalaSellerWebhook;
 
 
 use GuzzleHttp\Exception\GuzzleException as GuzzleExceptionAlias;
-use Monolog\Handler\StreamHandler;
-use Monolog\Logger;
 use Yeganehha\DigikalaSellerWebhook\Exceptions\ListOrdersShouldBeOrderNModelException;
 use Yeganehha\DigikalaSellerWebhook\Exceptions\OrdersNotArrayException;
+use Yeganehha\DigikalaSellerWebhook\Loggers\Logger;
 use Yeganehha\DigikalaSellerWebhook\Model\Order;
 
 class DigikalaService
@@ -56,6 +55,7 @@ class DigikalaService
 
     public $telegramWebHook = null ;
     public $telegramChannel = null;
+    public $discordWebHook = null;
 
     /**
      * Provide Digikala webhook token for authorization. You can find the token
@@ -74,6 +74,7 @@ class DigikalaService
         $this->webhook_token = $webhook_token;
         $this->api_token = $api_token;
         $this->update_quantity = $update_quantity;
+        $this->initLogger();
         APIHandler::setToken($this->api_token);
     }
 
@@ -140,6 +141,7 @@ class DigikalaService
     public function sendNotificationAutomatically(): DigikalaService
     {
         $this->send_notification = true;
+        $this->initLogger();
         return $this;
     }
 
@@ -150,6 +152,7 @@ class DigikalaService
     public function sendNotificationManually(): DigikalaService
     {
         $this->send_notification = false;
+        $this->initLogger();
         return $this;
     }
 
@@ -162,15 +165,6 @@ class DigikalaService
      */
     public function getListOrdersFromWebhook(): DigikalaService
     {
-
-        if ( $this->send_notification )
-        {
-
-            if ( $this->telegramWebHook ){
-
-            }
-        }
-
         $WebhookHandler = new WebhookHandler($this->webhook_token);
         $this->orders = $WebhookHandler->getOrders();
 
@@ -246,5 +240,18 @@ class DigikalaService
         foreach ( $this->orders as $order)
             $result[] = clone $order;
         return $result;
+    }
+
+    private function initLogger(): void
+    {
+        if ( $this->send_notification ){
+            Logger::$telegramWebhook = $this->telegramWebHook;
+            Logger::$telegramChannel = $this->telegramChannel;
+            Logger::$discordWebhook = $this->discordWebHook;
+        } else {
+            Logger::$telegramWebhook = null;
+            Logger::$telegramChannel = null;
+            Logger::$discordWebhook = null;
+        }
     }
 }

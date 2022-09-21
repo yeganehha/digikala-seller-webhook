@@ -2,6 +2,7 @@
 namespace Yeganehha\DigikalaSellerWebhook;
 
 use Yeganehha\DigikalaSellerWebhook\Exceptions\UnauthorizedException;
+use Yeganehha\DigikalaSellerWebhook\Loggers\Logger;
 use Yeganehha\DigikalaSellerWebhook\Model\Order;
 
 class WebhookHandler

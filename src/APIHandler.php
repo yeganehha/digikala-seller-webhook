@@ -5,6 +5,7 @@ namespace Yeganehha\DigikalaSellerWebhook;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use stdClass;
+use Yeganehha\DigikalaSellerWebhook\Loggers\Logger;
 
 class APIHandler
 {

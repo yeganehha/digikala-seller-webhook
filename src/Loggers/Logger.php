@@ -1,11 +1,12 @@
 <?php
 
-namespace Yeganehha\DigikalaSellerWebhook;
+namespace Yeganehha\DigikalaSellerWebhook\Loggers;
 
 use Monolog\Handler\MissingExtensionException;
-use Monolog\Handler\StreamHandler;
 use Monolog\Handler\TelegramBotHandler;
 use Monolog\Logger as Log;
+use Yeganehha\DigikalaSellerWebhook\Loggers\Handlers\DiscordWebhookHandler;
+
 class Logger
 {
     public static $loggerObject = [];
@@ -13,7 +14,6 @@ class Logger
     public static $telegramWebhook = null;
     public static $telegramChannel = null;
     public static $discordWebhook = null;
-    public static $slackWebhook = null;
 
     /**
      * @throws MissingExtensionException
@@ -27,6 +27,9 @@ class Logger
         $logger = new Log($name);
         if ( self::$telegramWebhook and self::$telegramChannel )
             $logger->pushHandler(new TelegramBotHandler(self::$telegramWebhook, self::$telegramChannel ,Log::INFO , true,'MarkDown'));
+
+        if ( self::$discordWebhook )
+            $logger->pushHandler(new DiscordWebhookHandler(self::$telegramWebhook, self::$telegramChannel ,Log::INFO , true,'MarkDown'));
 
 
         self::$loggerObject[$name] = $logger ;
